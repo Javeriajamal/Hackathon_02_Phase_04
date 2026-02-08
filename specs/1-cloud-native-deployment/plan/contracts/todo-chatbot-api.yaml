@@ -1,0 +1,287 @@
+# Todo Chatbot API Contract
+
+## Overview
+This contract defines the API endpoints for the Todo Chatbot application that will be containerized and deployed to Kubernetes. Based on the existing Phase-3 functionality, these APIs must remain consistent after deployment.
+
+## Base URL
+```
+http://todo-backend.[namespace].svc.cluster.local/api/v1
+```
+
+## Authentication
+All endpoints require a valid JWT token in the Authorization header:
+```
+Authorization: Bearer <jwt-token>
+```
+
+## API Endpoints
+
+### 1. User Authentication
+
+#### POST /auth/login
+**Description**: Authenticate user and return JWT token
+
+**Request**:
+```json
+{
+  "email": "user@example.com",
+  "password": "securePassword123"
+}
+```
+
+**Response** (200 OK):
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "user-123",
+    "email": "user@example.com"
+  }
+}
+```
+
+**Errors**:
+- 401: Invalid credentials
+- 400: Missing email or password
+
+#### POST /auth/register
+**Description**: Register new user
+
+**Request**:
+```json
+{
+  "email": "newuser@example.com",
+  "password": "securePassword123",
+  "confirmPassword": "securePassword123"
+}
+```
+
+**Response** (201 Created):
+```json
+{
+  "message": "User registered successfully",
+  "user": {
+    "id": "user-456",
+    "email": "newuser@example.com"
+  }
+}
+```
+
+### 2. Todo Management
+
+#### GET /todos
+**Description**: Get all todos for the authenticated user
+
+**Query Parameters**:
+- `completed` (optional): Filter by completion status (true/false)
+- `limit` (optional): Limit number of results
+- `offset` (optional): Offset for pagination
+
+**Response** (200 OK):
+```json
+{
+  "todos": [
+    {
+      "id": "todo-123",
+      "title": "Complete the project",
+      "description": "Finish the cloud-native deployment",
+      "completed": false,
+      "createdAt": "2026-02-08T10:00:00Z",
+      "updatedAt": "2026-02-08T10:00:00Z",
+      "userId": "user-123"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 1
+  }
+}
+```
+
+#### POST /todos
+**Description**: Create a new todo
+
+**Request**:
+```json
+{
+  "title": "New todo item",
+  "description": "Detailed description of the task",
+  "completed": false
+}
+```
+
+**Response** (201 Created):
+```json
+{
+  "id": "todo-456",
+  "title": "New todo item",
+  "description": "Detailed description of the task",
+  "completed": false,
+  "createdAt": "2026-02-08T11:00:00Z",
+  "updatedAt": "2026-02-08T11:00:00Z",
+  "userId": "user-123"
+}
+```
+
+**Errors**:
+- 400: Missing required fields
+- 422: Validation errors
+
+#### PUT /todos/{id}
+**Description**: Update an existing todo
+
+**Parameters**:
+- `id` (path): Todo ID
+
+**Request**:
+```json
+{
+  "title": "Updated todo title",
+  "description": "Updated description",
+  "completed": true
+}
+```
+
+**Response** (200 OK):
+```json
+{
+  "id": "todo-123",
+  "title": "Updated todo title",
+  "description": "Updated description",
+  "completed": true,
+  "createdAt": "2026-02-08T10:00:00Z",
+  "updatedAt": "2026-02-08T12:00:00Z",
+  "userId": "user-123"
+}
+```
+
+#### DELETE /todos/{id}
+**Description**: Delete a todo
+
+**Parameters**:
+- `id` (path): Todo ID
+
+**Response** (200 OK):
+```json
+{
+  "message": "Todo deleted successfully"
+}
+```
+
+**Errors**:
+- 404: Todo not found
+- 403: Not authorized to delete this todo
+
+#### PATCH /todos/{id}/complete
+**Description**: Mark a todo as complete/incomplete
+
+**Parameters**:
+- `id` (path): Todo ID
+
+**Request**:
+```json
+{
+  "completed": true
+}
+```
+
+**Response** (200 OK):
+```json
+{
+  "id": "todo-123",
+  "title": "Complete the project",
+  "description": "Finish the cloud-native deployment",
+  "completed": true,
+  "createdAt": "2026-02-08T10:00:00Z",
+  "updatedAt": "2026-02-08T13:00:00Z",
+  "userId": "user-123"
+}
+```
+
+### 3. Health Checks
+
+#### GET /health
+**Description**: Health check endpoint for Kubernetes readiness/liveness probes
+
+**Response** (200 OK):
+```json
+{
+  "status": "healthy",
+  "timestamp": "2026-02-08T14:00:00Z",
+  "version": "1.0.0",
+  "dependencies": {
+    "database": "connected",
+    "redis": "connected"
+  }
+}
+```
+
+## Kubernetes Service Configuration
+
+### Backend Service
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-backend
+  namespace: default
+spec:
+  selector:
+    app: todo-backend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3001
+  type: ClusterIP
+```
+
+### Frontend Service
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-frontend
+  namespace: default
+spec:
+  selector:
+    app: todo-frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: LoadBalancer  # Or NodePort for Minikube
+```
+
+## Environment Variables
+
+### Backend Configuration
+- `DB_HOST`: Database hostname (default: localhost)
+- `DB_PORT`: Database port (default: 5432)
+- `DB_NAME`: Database name
+- `DB_USER`: Database username
+- `DB_PASSWORD`: Database password
+- `JWT_SECRET`: JWT signing secret
+- `PORT`: Server port (default: 3001)
+
+### Frontend Configuration
+- `NEXT_PUBLIC_API_URL`: Backend API URL (e.g., http://todo-backend.default.svc.cluster.local/api/v1)
+
+## Security Requirements
+- All API endpoints require authentication except /health and auth endpoints
+- Use HTTPS in production (handled by ingress controller)
+- Rate limiting should be implemented at ingress level
+- Input validation required for all request parameters
+
+## Error Handling
+- Use standard HTTP status codes
+- Consistent error response format:
+```json
+{
+  "error": {
+    "message": "Descriptive error message",
+    "code": "ERROR_CODE",
+    "timestamp": "2026-02-08T14:00:00Z"
+  }
+}
+```

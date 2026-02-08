@@ -1,0 +1,145 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Neon Cyber Theme Colors */
+    --neon-cyan: 51 255 255;
+    --neon-purple: 187 134 252;
+    --neon-pink: 255 20 147;
+    --neon-blue: 0 191 255;
+    --neon-green: 50 255 150;
+
+    /* Glassmorphism variables */
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+
+    /* Base colors */
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+  }
+
+  .dark {
+    /* Dark theme with neon accents */
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+
+    /* Glassmorphism in dark mode */
+    --glass-bg: rgba(15, 15, 22, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Glassmorphism utility classes */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+}
+
+/* Neon glow effects */
+.neon-glow {
+  box-shadow:
+    0 0 5px rgba(var(--neon-cyan), 0.3),
+    0 0 10px rgba(var(--neon-cyan), 0.2),
+    0 0 15px rgba(var(--neon-cyan), 0.1);
+}
+
+.neon-glow:hover {
+  box-shadow:
+    0 0 10px rgba(var(--neon-cyan), 0.5),
+    0 0 20px rgba(var(--neon-cyan), 0.3),
+    0 0 30px rgba(var(--neon-cyan), 0.2);
+}
+
+.neon-glow-purple {
+  box-shadow:
+    0 0 5px rgba(var(--neon-purple), 0.3),
+    0 0 10px rgba(var(--neon-purple), 0.2),
+    0 0 15px rgba(var(--neon-purple), 0.1);
+}
+
+.neon-glow-purple:hover {
+  box-shadow:
+    0 0 10px rgba(var(--neon-purple), 0.5),
+    0 0 20px rgba(var(--neon-purple), 0.3),
+    0 0 30px rgba(var(--neon-purple), 0.2);
+}
+
+/* Neon button styles */
+.btn-neon {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn-neon::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-neon:hover::before {
+  left: 100%;
+}
+
+/* Custom scrollbar for neon theme */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 15, 22, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(139, 92, 246);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(124, 58, 237);
+}
+
+/* Text gradient for neon effect */
+.text-neon {
+  background: linear-gradient(45deg,
+    rgba(var(--neon-cyan)),
+    rgba(var(--neon-purple)),
+    rgba(var(--neon-pink)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Input fields with neon glow */
+.input-neon {
+  transition: all 0.3s ease;
+}
+
+.input-neon:focus {
+  outline: none;
+  box-shadow:
+    0 0 5px rgba(var(--neon-blue), 0.3),
+    0 0 10px rgba(var(--neon-blue), 0.2);
+}
+
+/* Task card styles */
+.task-card {
+  transition: all 0.3s ease;
+}
+
+.task-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 4px 20px rgba(139, 92, 246, 0.15),
+    0 0 10px rgba(139, 92, 246, 0.1);
+}
+

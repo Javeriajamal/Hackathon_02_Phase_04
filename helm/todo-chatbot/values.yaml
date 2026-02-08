@@ -1,0 +1,53 @@
+# Default values for todo-chatbot
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  imagePullPolicy: IfNotPresent
+
+frontend:
+  enabled: true
+  image:
+    repository: localhost:5000/todo-frontend
+    tag: "v1.0.0"
+  service:
+    type: ClusterIP
+    port: 3000
+  replicaCount: 1
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+
+backend:
+  enabled: true
+  image:
+    repository: localhost:5000/todo-backend
+    tag: "v1.0.0"
+  service:
+    type: ClusterIP
+    port: 8000
+  replicaCount: 1
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "300m"
+
+database:
+  url: "postgresql://user:password@postgres:5432/todo_db"
+
+ingress:
+  enabled: true
+  className: ""
+  hosts:
+    - host: todo.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
