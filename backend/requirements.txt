@@ -9,4 +9,5 @@ python-multipart
 python-dotenv
 bcrypt
 psycopg2-binary
+email-validator
 

@@ -3,3 +3,4 @@ node_modules/
 _pycache__/
 .env
 .env.local
+backend/__pycache__/

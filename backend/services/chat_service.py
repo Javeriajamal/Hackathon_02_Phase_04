@@ -158,7 +158,7 @@ class ChatService:
                     task_list = [f"{i+1}. {task['title']}" for i, task in enumerate(result["tasks"][:5])]  # Limit to first 5
                     ai_response = f"Here are your tasks:\n" + "\n".join(task_list)
                     if len(result["tasks"]) > 5:
-                        ai_response += f"\n\n...and {len(result["tasks"]) - 5} more tasks."
+                        ai_response += f"\n\n...and {len(result['tasks']) - 5} more tasks."
                 else:
                     ai_response = "You don't have any tasks in your list."
 
